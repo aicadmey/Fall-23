@@ -1,0 +1,27 @@
+# Import necessary libraries
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.cluster import KMeans
+
+# Load the Iris dataset
+iris = load_iris()
+X = iris.data  # Features
+# For clustering purposes, you can use a subset of features, for example:
+# X = iris.data[:, 2:4]  # Use petal length and petal width for clustering
+
+# Create a K-Means clustering model with K=3
+kmeans = KMeans(n_clusters=3, random_state=42)
+
+# Fit the model to the data
+kmeans.fit(X)
+
+# Get cluster centroids and labels
+centroids = kmeans.cluster_centers_
+labels = kmeans.labels_
+
+# Plot the data points and cluster centroids
+plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='viridis')
+plt.scatter(centroids[:, 0], centroids[:, 1], marker='x', s=200, linewidths=3, color='red')
+plt.title('K-Means Clustering')
+plt.show()

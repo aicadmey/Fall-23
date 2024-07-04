@@ -1,0 +1,52 @@
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
+# Generate synthetic data
+np.random.seed(0)
+exam1_scores = np.random.uniform(40, 100, 100)
+exam2_scores = np.random.uniform(40, 100, 100)
+admission_status = (exam1_scores + exam2_scores) > 140  # A simple admission decision based on scores
+
+# Create a DataFrame
+data = pd.DataFrame({'Exam1_Score': exam1_scores, 'Exam2_Score': exam2_scores, 'Admitted': admission_status})
+
+# Split the data into training and testing sets
+X = data[['Exam1_Score', 'Exam2_Score']]
+y = data['Admitted']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create a Logistic Regression model
+model = LogisticRegression(solver='lbfgs')
+
+# Train the model on the training data
+model.fit(X_train, y_train)
+
+# Make predictions on the test data
+y_pred = model.predict(X_test)
+
+# Calculate and print the model's accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Accuracy: {accuracy:.2f}')
+
+# Generate and print a classification report
+class_report = classification_report(y_test, y_pred, target_names=['Not Admitted', 'Admitted'])
+print(f'Classification Report:\n{class_report}')
+
+# Plot the decision boundary
+x_min, x_max = X['Exam1_Score'].min() - 10, X['Exam1_Score'].max() + 10
+y_min, y_max = X['Exam2_Score'].min() - 10, X['Exam2_Score'].max() + 10
+xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1), np.arange(y_min, y_max, 0.1))
+Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+
+plt.contourf(xx, yy, Z, alpha=0.4)
+plt.scatter(X['Exam1_Score'], X['Exam2_Score'], c=y, marker='o', edgecolor='k')
+plt.title('Logistic Regression: Admission Prediction')
+plt.xlabel('Exam 1 Score')
+plt.ylabel('Exam 2 Score')
+plt.show()
